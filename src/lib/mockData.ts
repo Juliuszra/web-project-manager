@@ -1,0 +1,1 @@
+// co ma być  status: "TODO" | "DOING" | "DONE"

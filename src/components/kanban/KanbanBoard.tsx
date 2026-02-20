@@ -1,24 +1,34 @@
-import { Task } from "@/lib/mockData";
+import { Task, TaskStatus } from "@/lib/mockData";
+import TaskCard from "@/components/kanban/TaskCard";
 
 type Props = {
   tasks: Task[];
+  onMove: (taskId: string, nextStatus: TaskStatus) => void;
 };
 
-export default function KanbanBoard({ tasks }: Props) {
+export default function KanbanBoard({ tasks, onMove }: Props) {
   const todo = tasks.filter((t) => t.status === "TODO");
   const doing = tasks.filter((t) => t.status === "DOING");
   const done = tasks.filter((t) => t.status === "DONE");
 
   return (
     <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
-      <KanbanColumn title="TODO" tasks={todo} />
-      <KanbanColumn title="DOING" tasks={doing} />
-      <KanbanColumn title="DONE" tasks={done} />
+      <KanbanColumn title="TODO" tasks={todo} onMove={onMove} />
+      <KanbanColumn title="DOING" tasks={doing} onMove={onMove} />
+      <KanbanColumn title="DONE" tasks={done} onMove={onMove} />
     </div>
   );
 }
 
-function KanbanColumn({ title, tasks }: { title: string; tasks: Task[] }) {
+function KanbanColumn({
+  title,
+  tasks,
+  onMove,
+}: {
+  title: string;
+  tasks: Task[];
+  onMove: (taskId: string, nextStatus: TaskStatus) => void;
+}) {
   return (
     <div
       style={{
@@ -37,20 +47,7 @@ function KanbanColumn({ title, tasks }: { title: string; tasks: Task[] }) {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {tasks.map((task) => (
-            <div
-              key={task.id}
-              style={{
-                border: "1px solid #e5e5e5",
-                borderRadius: 10,
-                padding: 10,
-                background: "white",
-              }}
-            >
-              <strong>{task.title}</strong>
-              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>
-                Priority: {task.priority} | Deadline: {task.deadline}
-              </div>
-            </div>
+            <TaskCard key={task.id} task={task} onMove={onMove} />
           ))}
         </div>
       )}

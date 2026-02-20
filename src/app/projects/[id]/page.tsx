@@ -1,5 +1,4 @@
-
-import ProjectClient from "@/app/projects/ProjectClient";
+import ProjectClient from "@/components/projects/ProjectClient";
 
 type Props = {
   params: Promise<{ id: string }>;

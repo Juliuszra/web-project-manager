@@ -1,6 +1,16 @@
 "use client";
 
-import { Task, TaskStatus } from "@/lib/mockData";
+type TaskStatus = "TODO" | "DOING" | "DONE";
+
+type Task = {
+  id: string;
+  projectId: string;
+  title: string;
+  description?: string;
+  priority: "LOW" | "MEDIUM" | "HIGH";
+  status: TaskStatus;
+  deadline?: string | null;
+};
 
 type Props = {
   task: Task;
@@ -29,7 +39,7 @@ export default function TaskCard({ task, onMove }: Props) {
       <strong>{task.title}</strong>
 
       <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>
-        Priority: {task.priority} | Deadline: {task.deadline}
+        Priority: {task.priority} | Deadline: {task.deadline ?? "brak"}
       </div>
 
       <button

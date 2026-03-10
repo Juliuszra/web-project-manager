@@ -1,9 +1,19 @@
-import { Task, TaskStatus } from "@/lib/mockData";
 import TaskCard from "@/components/kanban/TaskCard";
+
+
+type Task = {
+  id: string;
+  projectId: string;
+  title: string;
+  description?: string; // <-- ważne: opcjonalne
+  priority: "LOW" | "MEDIUM" | "HIGH";
+  status: "TODO" | "DOING" | "DONE";
+  deadline?: string | null;
+};
 
 type Props = {
   tasks: Task[];
-  onMove: (taskId: string, nextStatus: TaskStatus) => void;
+  onMove: (taskId: string, newStatus: Task["status"]) => void;
 };
 
 export default function KanbanBoard({ tasks, onMove }: Props) {
@@ -12,45 +22,27 @@ export default function KanbanBoard({ tasks, onMove }: Props) {
   const done = tasks.filter((t) => t.status === "DONE");
 
   return (
-    <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
-      <KanbanColumn title="TODO" tasks={todo} onMove={onMove} />
-      <KanbanColumn title="DOING" tasks={doing} onMove={onMove} />
-      <KanbanColumn title="DONE" tasks={done} onMove={onMove} />
-    </div>
-  );
-}
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+      <div>
+        <h2>TODO</h2>
+        {todo.map((task) => (
+          <TaskCard key={task.id} task={task} onMove={onMove} />
+        ))}
+      </div>
 
-function KanbanColumn({
-  title,
-  tasks,
-  onMove,
-}: {
-  title: string;
-  tasks: Task[];
-  onMove: (taskId: string, nextStatus: TaskStatus) => void;
-}) {
-  return (
-    <div
-      style={{
-        flex: 1,
-        border: "1px solid #ddd",
-        borderRadius: 10,
-        padding: 12,
-        minHeight: 220,
-        background: "#fafafa",
-      }}
-    >
-      <h3 style={{ marginTop: 0 }}>{title}</h3>
+      <div>
+        <h2>DOING</h2>
+        {doing.map((task) => (
+          <TaskCard key={task.id} task={task} onMove={onMove} />
+        ))}
+      </div>
 
-      {tasks.length === 0 ? (
-        <p style={{ opacity: 0.6 }}>No tasks</p>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} onMove={onMove} />
-          ))}
-        </div>
-      )}
+      <div>
+        <h2>DONE</h2>
+        {done.map((task) => (
+          <TaskCard key={task.id} task={task} onMove={onMove} />
+        ))}
+      </div>
     </div>
   );
 }

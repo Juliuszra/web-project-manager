@@ -1,22 +1,22 @@
 import Link from "next/link";
-import { mockProjects } from "@/lib/mockData";
+import { dbConnect } from "@/lib/mongodb";
+import { Project } from "@/models/Project";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await dbConnect();
+  const projects = await Project.find().sort({ createdAt: -1 }).lean();
+
   return (
-    <div style={{ padding: 20 }}>
+    <main>
       <h1>Dashboard</h1>
-      <h2>Your Projects</h2>
 
       <ul>
-        {mockProjects.map((project) => (
-          <li key={project.id} style={{ marginBottom: 10 }}>
-            <Link href={`/projects/${project.id}`}>
-              <strong>{project.name}</strong>
-            </Link>
-            <p>{project.description}</p>
+        {projects.map((p: any) => (
+          <li key={p._id.toString()}>
+            <Link href={`/projects/${p._id.toString()}`}>{p.name}</Link>
           </li>
         ))}
       </ul>
-    </div>
+    </main>
   );
 }

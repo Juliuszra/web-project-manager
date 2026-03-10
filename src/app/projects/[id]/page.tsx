@@ -1,12 +1,31 @@
+import { dbConnect } from "@/lib/mongodb";
+import { Project } from "@/models/Project";
+import { Task } from "@/models/Task";
 import ProjectClient from "@/components/projects/ProjectClient";
 
-type Props = {
-  params: Promise<{ id: string }>;
-};
+export default async function ProjectPage({ params }: { params: { id: string } }) {
+  await dbConnect();
 
-export default async function ProjectPage({ params }: Props) {
-  const { id } = await params;
-  const projectId = String(id).trim();
+  const project = await Project.findById(params.id).lean();
+  if (!project) return <div>Nie znaleziono projektu</div>;
 
-  return <ProjectClient projectId={projectId} />;
+  const tasks = await Task.find({ projectId: params.id }).sort({ createdAt: -1 }).lean();
+
+  // ważne: serializacja _id dla klienta
+  const safeProject = {
+    ...project,
+    _id: project._id.toString(),
+  };
+
+ const safeTasks = tasks.map((t: any) => ({
+  id: t._id.toString(),
+  projectId: t.projectId.toString(),
+  title: t.title,
+  description: t.description ?? "",
+  priority: t.priority,
+  status: t.status,
+  deadline: t.deadline ? new Date(t.deadline).toISOString() : null,
+}));
+
+  return <ProjectClient project={safeProject} initialTasks={safeTasks} />;
 }
